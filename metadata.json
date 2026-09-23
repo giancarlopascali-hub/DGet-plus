@@ -1,0 +1,6 @@
+{
+  "name": "DGet+ (DGet-plus) - Deuteration Calculator",
+  "description": "High-performance HRMS mass spectrometry deuteration calculator and isotopologue deconvolution app based on DGet!, ready for GitHub Pages.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
