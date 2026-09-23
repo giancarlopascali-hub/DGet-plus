@@ -419,9 +419,9 @@ export const App: React.FC = () => {
 
       {/* 3. Main Desktop Workspace (Dockable Layout) */}
       <div className="flex-1 flex overflow-hidden min-h-0 w-full bg-slate-200">
-        {/* Leftmost Full-Height Vertical Panel: Files Under Analysis */}
+        {/* Leftmost Full-Height Vertical Panel: Files Under Analysis (Reduced to 80% width) */}
         {docksVisibility.files && !isPlotMaximized && (
-          <div className="w-80 flex-shrink-0 flex flex-col h-full bg-white border-r border-slate-300 z-10">
+          <div className="w-64 flex-shrink-0 flex flex-col h-full bg-white border-r border-slate-300 z-10">
             <FilesDock
               files={filesWithResults}
               activeFileId={activeFileId}

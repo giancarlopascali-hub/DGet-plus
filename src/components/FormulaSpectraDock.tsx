@@ -93,60 +93,66 @@ export const FormulaSpectraDock: React.FC<FormulaSpectraDockProps> = ({
   return (
     <div className="bg-white w-full flex flex-col h-full text-xs select-none min-h-0 border-t border-slate-200">
       {/* Header */}
-      <div className="bg-slate-100 px-2.5 py-1.5 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between flex-shrink-0">
+      <div className="bg-slate-100 px-2 py-1 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <BarChart2 className="w-3.5 h-3.5 text-amber-600" />
-          <span className="font-bold text-slate-900">Formula Spectra</span>
+          <span className="font-bold text-slate-900 text-xs">Formula Spectra</span>
         </div>
 
-        {/* Sliders & Downloads in Header (compact & clean) */}
-        <div className="flex items-center gap-1.5 text-[10px] text-slate-600 flex-shrink-0">
-          {/* Vertical Gain Slider */}
-          <div className="flex items-center gap-1" title="Vertical Gain / Zoom minor peaks">
-            <span className="font-mono text-slate-500">Gain:</span>
-            <input
-              type="range"
-              min="1.0"
-              max="10.0"
-              step="0.5"
-              value={gain}
-              onChange={(e) => setGain(parseFloat(e.target.value))}
-              className="w-11 accent-amber-600 cursor-pointer h-1.5 bg-slate-200 rounded"
-            />
-            <span className="font-mono text-amber-700 font-bold w-6">{gain.toFixed(1)}x</span>
+        {/* Sliders stacked vertically + Download actions to the right */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Stacked sliders: Gain (height) on top, Width (spacing) below */}
+          <div className="flex flex-col gap-0.5 text-[9.5px] text-slate-600">
+            {/* Row 1: Height / Gain */}
+            <div className="flex items-center gap-1" title="Vertical Gain / Height of peaks">
+              <span className="font-mono text-slate-500 w-6">Gain:</span>
+              <input
+                type="range"
+                min="1.0"
+                max="10.0"
+                step="0.5"
+                value={gain}
+                onChange={(e) => setGain(parseFloat(e.target.value))}
+                className="w-12 accent-amber-600 cursor-pointer h-1.5 bg-slate-200 rounded"
+              />
+              <span className="font-mono text-amber-700 font-bold w-5 text-right">{gain.toFixed(1)}x</span>
+            </div>
+
+            {/* Row 2: Width / Spacing */}
+            <div className="flex items-center gap-1" title="Horizontal Width / Peak bin spacing">
+              <span className="font-mono text-slate-500 w-6">Width:</span>
+              <input
+                type="range"
+                min="30"
+                max="90"
+                step="5"
+                value={spacing}
+                onChange={(e) => setSpacing(parseInt(e.target.value, 10))}
+                className="w-12 accent-sky-600 cursor-pointer h-1.5 bg-slate-200 rounded"
+              />
+              <span className="font-mono text-sky-700 font-semibold w-5 text-right">{spacing}</span>
+            </div>
           </div>
 
-          {/* Width / Spacing Slider */}
-          <div className="flex items-center gap-1" title="Horizontal peak spacing slider">
-            <span className="font-mono text-slate-500">W:</span>
-            <input
-              type="range"
-              min="30"
-              max="90"
-              step="5"
-              value={spacing}
-              onChange={(e) => setSpacing(parseInt(e.target.value, 10))}
-              className="w-10 accent-sky-600 cursor-pointer h-1.5 bg-slate-200 rounded"
-            />
-          </div>
-
-          <div className="h-3 w-px bg-slate-300 mx-0.5" />
+          <div className="h-6 w-px bg-slate-300" />
 
           {/* Download buttons */}
-          <button
-            onClick={handleDownloadImage}
-            className="p-1 rounded hover:bg-slate-200 text-slate-700 transition"
-            title="Download Formula PSF Plot as PNG Image"
-          >
-            <ImageIcon className="w-3.5 h-3.5 text-sky-600" />
-          </button>
-          <button
-            onClick={handleDownloadCsv}
-            className="p-1 rounded hover:bg-slate-200 text-slate-700 transition"
-            title="Download Formula PSF Peak Values as CSV"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-          </button>
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={handleDownloadImage}
+              className="p-1 rounded hover:bg-slate-200 text-slate-700 transition"
+              title="Download Formula PSF Plot as PNG Image"
+            >
+              <ImageIcon className="w-3.5 h-3.5 text-sky-600" />
+            </button>
+            <button
+              onClick={handleDownloadCsv}
+              className="p-1 rounded hover:bg-slate-200 text-slate-700 transition"
+              title="Download Formula PSF Peak Values as CSV"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+            </button>
+          </div>
         </div>
       </div>
 
