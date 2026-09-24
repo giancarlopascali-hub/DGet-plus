@@ -50,7 +50,7 @@ export const MainSpectraCanvas: React.FC<MainSpectraCanvasProps> = ({
   const padding = useMemo(() => ({
     left: 82,
     right: 32,
-    top: 36,
+    top: 48,
     bottom: 56,
   }), []);
 
@@ -144,7 +144,18 @@ export const MainSpectraCanvas: React.FC<MainSpectraCanvasProps> = ({
     const fileChanged = lastActiveFileRef.current !== activeFileName;
     lastActiveFileRef.current = activeFileName;
 
-    if (!isInitialized || fileChanged) {
+    // Whenever a file is clicked/switched, always open in "reset" (full) view
+    if (fileChanged) {
+      setViewX([fullBounds.minX, fullBounds.maxX]);
+      setViewY([0, fullBounds.maxY * 1.15]);
+      if (onToggleZoomD) {
+        onToggleZoomD(false);
+      }
+      setIsInitialized(true);
+      return;
+    }
+
+    if (!isInitialized) {
       if (zoomDEnabled && result && result.targetMasses.length > 0) {
         const minD = Math.min(...result.targetMasses) - 1.5;
         const maxD = Math.max(...result.targetMasses) + 2.0;
@@ -162,7 +173,7 @@ export const MainSpectraCanvas: React.FC<MainSpectraCanvasProps> = ({
       }
       setIsInitialized(true);
     }
-  }, [activeFileName, zoomDEnabled, rawData, result, fullBounds, isInitialized]);
+  }, [activeFileName, zoomDEnabled, rawData, result, fullBounds, isInitialized, onToggleZoomD]);
 
   // Coordinate transforms
   const coordToPixel = useCallback(
@@ -362,7 +373,7 @@ export const MainSpectraCanvas: React.FC<MainSpectraCanvasProps> = ({
           ctx.strokeStyle = state.isActive ? '#dc2626' : '#16a34a';
           ctx.lineWidth = 1.2;
           ctx.setLineDash([2, 2]);
-          ctx.moveTo(px, padding.top + 16);
+          ctx.moveTo(px, padding.top + 26);
           ctx.lineTo(px, py);
           ctx.stroke();
           ctx.setLineDash([]);
@@ -370,19 +381,24 @@ export const MainSpectraCanvas: React.FC<MainSpectraCanvasProps> = ({
           // Pin head dot
           ctx.beginPath();
           ctx.fillStyle = state.isActive ? '#dc2626' : '#16a34a';
-          ctx.arc(px, Math.max(padding.top + 18, topCoord.py), 3.5, 0, Math.PI * 2);
+          ctx.arc(px, Math.max(padding.top + 28, topCoord.py), 3.5, 0, Math.PI * 2);
           ctx.fill();
 
-          // Label badge
+          // 1. State Label (e.g. D0, D1)
           ctx.fillStyle = state.isActive ? '#991b1b' : '#166534';
           ctx.font = 'bold 10px monospace';
           ctx.textAlign = 'center';
-          ctx.fillText(state.label, px, padding.top + 5);
+          ctx.fillText(state.label, px, padding.top + 4);
 
-          // Abundance % under label
-          ctx.fillStyle = state.isActive ? '#b91c1c' : '#15803d';
+          // 2. Centroid m/z value
+          ctx.fillStyle = state.isActive ? '#7f1d1d' : '#14532d';
           ctx.font = '9px monospace';
-          ctx.fillText(`${state.percent.toFixed(1)}%`, px, padding.top + 15);
+          ctx.fillText(`${state.monoisotopicMz.toFixed(3)}`, px, padding.top + 14);
+
+          // 3. Abundance % under centroid m/z
+          ctx.fillStyle = state.isActive ? '#b91c1c' : '#15803d';
+          ctx.font = 'bold 9px monospace';
+          ctx.fillText(`${state.percent.toFixed(1)}%`, px, padding.top + 24);
         }
       });
     }

@@ -96,6 +96,11 @@ export const App: React.FC = () => {
         const activeIdx = prev.findIndex((f) => f.id === activeFileId);
         if (activeIdx === -1) return prev;
 
+        // Invalidate cached results for the active file and all cascaded files below it
+        for (let i = activeIdx; i < prev.length; i++) {
+          delete resultsCacheRef.current[prev[i].id];
+        }
+
         return prev.map((file, idx) => {
           // Update active file and cascade to all files below it
           if (idx >= activeIdx) {
@@ -202,29 +207,33 @@ export const App: React.FC = () => {
   // Files merged with their latest calculation results for FilesDock & summary exports
   const filesWithResults = useMemo(() => {
     return files.map((f) => {
-      let r = f.id === activeFileId ? (calculationResult || resultsCacheRef.current[f.id]) : resultsCacheRef.current[f.id];
-      if (!r) {
-        // Compute on-the-fly for any other file using its parameters
-        try {
-          const form = new Formula(f.formula);
-          if (form.deuteriumCount > 0 && f.data.x.length > 0) {
-            const dg = new DGet({
-              formula: form,
-              data: f.data,
-              adduct: f.adduct,
-              cutoff: f.cutoff,
-              signalMassWidth: f.signalMassWidth,
-              signalMode: f.signalMode,
-              massShift: f.massShift,
-            });
-            r = dg.calculate();
-            resultsCacheRef.current[f.id] = r;
-          }
-        } catch {
-          // ignore
-        }
+      // If this file is the active file and we have calculationResult, use it
+      if (f.id === activeFileId && calculationResult) {
+        return { ...f, result: calculationResult };
       }
-      return { ...f, result: r || undefined };
+
+      // Compute on-the-fly for each file using its own current parameters
+      try {
+        const form = new Formula(f.formula);
+        if (form.deuteriumCount > 0 && f.data.x.length > 0) {
+          const dg = new DGet({
+            formula: form,
+            data: f.data,
+            adduct: f.adduct,
+            cutoff: f.cutoff,
+            signalMassWidth: f.signalMassWidth,
+            signalMode: f.signalMode,
+            massShift: f.massShift,
+          });
+          const r = dg.calculate();
+          resultsCacheRef.current[f.id] = r;
+          return { ...f, result: r };
+        }
+      } catch {
+        // ignore invalid formula or calculation errors
+      }
+
+      return { ...f, result: resultsCacheRef.current[f.id] || undefined };
     });
   }, [files, activeFileId, calculationResult]);
 
@@ -403,8 +412,6 @@ export const App: React.FC = () => {
         onToggleDeconvolution={() => setShowDeconvolution(!showDeconvolution)}
         showIsotopologues={showIsotopologues}
         onToggleIsotopologues={() => setShowIsotopologues(!showIsotopologues)}
-        onZoomToD={() => handleToggleZoomD(true)}
-        onResetZoom={() => handleToggleZoomD(false)}
         signalMode={signalMode}
         onSignalModeChange={(mode) => {
           setSignalMode(mode);

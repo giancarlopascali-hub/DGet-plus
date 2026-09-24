@@ -2,8 +2,6 @@ import React from 'react';
 import {
   LineChart,
   BarChart3,
-  ZoomIn,
-  RotateCcw,
   Sparkles,
   Layers,
   Wand2,
@@ -18,8 +16,6 @@ interface ToolBarProps {
   onToggleDeconvolution: () => void;
   showIsotopologues: boolean;
   onToggleIsotopologues: () => void;
-  onZoomToD: () => void;
-  onResetZoom: () => void;
   signalMode: SignalMode;
   onSignalModeChange: (mode: SignalMode) => void;
   onAutoAlign: () => void;
@@ -34,8 +30,6 @@ export const ToolBar: React.FC<ToolBarProps> = ({
   onToggleDeconvolution,
   showIsotopologues,
   onToggleIsotopologues,
-  onZoomToD,
-  onResetZoom,
   signalMode,
   onSignalModeChange,
   onAutoAlign,
@@ -93,29 +87,6 @@ export const ToolBar: React.FC<ToolBarProps> = ({
         <Layers className="w-3.5 h-3.5 text-purple-600" />
         <span>Isotopologues</span>
       </button>
-
-      <div className="h-4 w-px bg-slate-200 mx-1" />
-
-      {/* Zoom controls */}
-      <button
-        onClick={onZoomToD}
-        className="flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 shadow-xs transition"
-        title="Zoom viewport to target deuterated envelope"
-      >
-        <ZoomIn className="w-3.5 h-3.5 text-emerald-600" />
-        <span>Zoom to D</span>
-      </button>
-
-      <button
-        onClick={onResetZoom}
-        className="flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 shadow-xs transition"
-        title="Reset zoom to full m/z range"
-      >
-        <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
-        <span>Reset Zoom</span>
-      </button>
-
-      <div className="h-4 w-px bg-slate-200 mx-1" />
 
       {/* Signal Extraction Mode (Peak Height vs Area) */}
       <div className="flex items-center bg-slate-100 p-0.5 rounded border border-slate-300">
